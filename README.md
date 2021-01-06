@@ -316,128 +316,67 @@ faster_rcnn_inception_v2_pets.config dosyasında aşağıdaki değişiklikleri y
 - Satır 9. num_classes, sınıflandırıcının algılamasını istediğiniz farklı nesnelerin sayısına değiştirin. Yukarıdaki basketbol, gömlek ve ayakkabı detektörü için num_classes: 3 olacaktır.
 
 - Satır 106. fine_tune_checkpoint'i şu şekilde değiştirin:
-  - fine_tune_checkpoint : "C:/tensorflow_kod/models/research/object_detection/faster_rcnn_inception_v2_coco_2018_01_28/model.ckpt"
+    - fine_tune_checkpoint : "C:/tensorflow_kod/models/research/object_detection/faster_rcnn_inception_v2_coco_2018_01_28/model.ckpt"
 
 -  123 ve 125. satırlar. train_input_reader bölümünde, input_path ve label_map_path değerlerini şu şekilde değiştirin::
-  - input_path : "C:/tensorflow_kod/models/research/object_detection/train.record"
-  - label_map_path: "C:/tensorflow_kod/models/research/object_detection/training/labelmap.pbtxt"
+    - input_path : "C:/tensorflow_kod/models/research/object_detection/train.record"
+    - label_map_path: "C:/tensorflow_kod/models/research/object_detection/training/labelmap.pbtxt"
 
 -  Satır 130 daki  num_examples değişkenini \images\test dizinindeki görüntülerin sayısına değiştirin.
 
 -  135 ve 137. satırlar. eval_input_reader bölümünde, input_path ve label_map_path değerlerini şu şekilde değiştirin:
-  - input_path : "C:/tensorflow1/models/research/object_detection/test.record"
-  - label_map_path: "C:/tensorflow1/models/research/object_detection/training/labelmap.pbtxt"
+    - input_path : "C:/tensorflow1/models/research/object_detection/test.record"
+    - label_map_path: "C:/tensorflow1/models/research/object_detection/training/labelmap.pbtxt"
 
 Değişiklikler yapıldıktan sonra dosyayı kaydedin. Bu kadar! Eğitim işi tamamen yapılandırıldı ve kullanıma hazır!
 
-### 6. Run the Training
+### 6. Eğitimi çalıştırma zamanı
 
-*As of version 1.9, TensorFlow has deprecated the "train.py" file and replaced it with "model_main.py" file. I haven't been able to get model_main.py to work correctly yet (I run in to errors related to pycocotools). Fortunately, the train.py file is still available in the /object_detection/legacy folder. Simply move train.py from /object_detection/legacy into the /object_detection folder and then continue following the steps below.*
+*1.9 sürümünden itibaren, TensorFlow "train.py" dosyasını kullanımdan kaldırmış ve onu "model_main.py" dosyasıyla değiştirmiştir. Henüz model_main.py'nin düzgün çalışmasını sağlayamadım pycocotools kurulu olarak kullanılabilir. Bunun yerine train.py dosyası da /object_detection/legacy klasöründe hala mevcuttur. Train.py'yi /object_detection/legacy'den /object_detection klasörüne taşıyın ve ardından aşağıdaki adımları izlemeye devam edin.*
 
-Here we go! From the \object_detection directory, issue the following command to begin training:
+
+İşte başlıyoruz! \Object_detection dizininden, eğitime başlamak için aşağıdaki komutu verin:
+
 ```
 python train.py --logtostderr --train_dir=training/ --pipeline_config_path=training/faster_rcnn_inception_v2_pets.config
 ```
-If everything has been set up correctly, TensorFlow will initialize the training. The initialization can take up to 30 seconds before the actual training begins. When training begins, it will look like this:
 
 
-Each step of training reports the loss. It will start high and get lower and lower as training progresses. For my training on the Faster-RCNN-Inception-V2 model, it started at about 3.0 and quickly dropped below 0.8. I recommend allowing your model to train until the loss consistently drops below 0.05, which will take about 40,000 steps, or about 2 hours (depending on how powerful your CPU and GPU are). Note: The loss numbers will be different if a different model is used. MobileNet-SSD starts with a loss of about 20, and should be trained until the loss is consistently under 2.
+Her şey doğru ayarlanmışsa ve düzgün çalışırsa, TensorFlow eğitimi başlatır. Gerçek eğitimin başlaması 30 saniye kadar sürebilir. Eğitim başladığında şöyle görünecek:
 
-You can view the progress of the training job by using TensorBoard. To do this, open a new instance of Anaconda Prompt, activate the tensorflow1 virtual environment, change to the C:\tensorflow1\models\research\object_detection directory, and issue the following command:
+Eğitimin her adımı loss (kayıp) değerini rapor eder. Loss değeri eğitim ilerledikçe azalacaktır. Faster-RCNN-Inception-V2 modeliyle ilgili loss değeri eğitimin başında yaklaşık 3.0'da başladı ve hızla 0.8'in altına düştü. Modelinizin, loss (kayıp) değeri sürekli olarak 0,05'in altına düşene kadar eğitilmesine izin vermenizi öneririm, bu yaklaşık 40.000 adım veya yaklaşık 2 saat sürer (CPU'nuzun ve GPU'nuzun ne kadar güçlü olduğuna bağlı olarak). Not: Farklı bir model kullanılırsa kayıp numaraları farklı olacaktır. MobileNet-SSD yaklaşık 20 loss değeri ile başlar ve kayıp sürekli olarak 2'nin altına düşene kadar eğitilmelidir.
+
+
+TensorBoard'u kullanarak eğitim işinin ilerlemesini görüntüleyebilirsiniz. Bunu yapmak için, Anaconda İsteminin yeni bir örneğini açın, tensorflow_kod sanal ortamını etkinleştirin, C:\tensorflow_kod\models\research\object_detection dizinine geçin ve aşağıdaki komutu verin:
+
+
 ```
-(tensorflow1) C:\tensorflow1\models\research\object_detection>tensorboard --logdir=training
+(tensorflow_kod) C:\tensorflow_kod\models\research\object_detection>tensorboard --logdir=training
 ```
-This will create a webpage on your local machine at YourPCName:6006, which can be viewed through a web browser. The TensorBoard page provides information and graphs that show how the training is progressing. One important graph is the Loss graph, which shows the overall loss of the classifier over time.
+
+Bu, yerel makinenizde Kişisel BilgisayarAdı: 6006'da bir web sayfası oluşturacaktır ve bu bir web tarayıcısı aracılığıyla görüntülenebilir. TensorBoard sayfası, eğitimin nasıl ilerlediğini gösteren bilgiler ve grafikler sağlar. Önemli bir grafik, sınıflandırıcının zaman içindeki genel kaybını gösteren Kayıp grafiğidir.
+
+Eğitim rutini, kontrol noktalarını her beş dakikada bir periyodik olarak kaydeder. Komut istemi penceresindeyken Ctrl + C tuşlarına basarak eğitimi sonlandırabilirsiniz. Eğitimi sonlandırmak için genellikle bir kontrol noktası kaydedildikten hemen sonrasını beklerim. Eğitimi sonlandırıp daha sonra başlatabilirsiniz; son kaydedilen kontrol noktasından başlayacaktır. En yüksek adım sayısındaki kontrol noktası, dondurulmuş çıkarım grafiğini oluşturmak için kullanılacaktır.
 
 
-The training routine periodically saves checkpoints about every five minutes. You can terminate the training by pressing Ctrl+C while in the command prompt window. I typically wait until just after a checkpoint has been saved to terminate the training. You can terminate training and start it later, and it will restart from the last saved checkpoint. The checkpoint at the highest number of steps will be used to generate the frozen inference graph.
+### 7.  Inference Graph dışarı aktarma
 
-### 7. Export Inference Graph
-Now that training is complete, the last step is to generate the frozen inference graph (.pb file). From the \object_detection folder, issue the following command, where “XXXX” in “model.ckpt-XXXX” should be replaced with the highest-numbered .ckpt file in the training folder:
+Eğitim tamamlandığına göre, son adım donmuş çıkarım grafiğini (.pb dosyası) oluşturmaktır. \ Object_detection klasöründen aşağıdaki komutu çalıştırın; burada “model.ckpt-XXXX” içindeki “XXXX” eğitim klasöründeki en yüksek numaralı .ckpt dosyasıyla değiştirilmelidir:
+
 ```
 python export_inference_graph.py --input_type image_tensor --pipeline_config_path training/faster_rcnn_inception_v2_pets.config --trained_checkpoint_prefix training/model.ckpt-XXXX --output_directory inference_graph
 ```
-This creates a frozen_inference_graph.pb file in the \object_detection\inference_graph folder. The .pb file contains the object detection classifier.
 
-### 8. Use Your Newly Trained Object Detection Classifier!
-The object detection classifier is all ready to go! I’ve written Python scripts to test it out on an image, video, or webcam feed.
+Bu, \object_detection\inference_graph klasöründe bir frozen_inference_graph.pb dosyası oluşturur. (.Pb) dosyası, nesne algılama sınıflandırıcısını içerir.
 
-Before running the Python scripts, you need to modify the NUM_CLASSES variable in the script to equal the number of classes you want to detect. (For my Pinochle Card Detector, there are six cards I want to detect, so NUM_CLASSES = 6.)
+### 8. Yeni Eğitilmiş Nesne Algılama Sınıflandırıcınızı Kullanın!
 
-To test your object detector, move a picture of the object or objects into the \object_detection folder, and change the IMAGE_NAME variable in the Object_detection_image.py to match the file name of the picture. Alternatively, you can use a video of the objects (using Object_detection_video.py), or just plug in a USB webcam and point it at the objects (using Object_detection_webcam.py).
+Nesne algılama sınıflandırıcısı kullanıma hazır! Bir görüntü, video veya web kamerası akışında test etmek için Python komut dosyaları bulunmaktadır.
 
-To run any of the scripts, type “idle” in the Anaconda Command Prompt (with the “tensorflow1” virtual environment activated) and press ENTER. This will open IDLE, and from there, you can open any of the scripts and run them.
+Python komut dosyalarını çalıştırmadan önce, komut dosyasındaki NUM_CLASSES değişkenini, algılamak istediğiniz sınıfların sayısına eşit olacak şekilde değiştirmek gerekir.
 
-If everything is working properly, the object detector will initialize for about 10 seconds and then display a window showing any objects it’s detected in the image!
+Nesne algılayıcınızı test etmek için, nesnenin veya nesnelerin bir resmini \object_detection klasörüne taşıyın ve Object_detection_image.py'deki IMAGE_NAME değişkenini resmin dosya adıyla eşleşecek şekilde değiştirin. Alternatif olarak, (Object_detection_video.py kullanarak) nesnelerin içinde bulunduğu videoda nesne tanıması yapabilir  veya (Object_detection_webcam.py kullanarak) USB web kamerası takarak tanınması istenen nesneleri tanıyabilir hale getirilebilir.
 
-If you encounter errors, please check out the Appendix: it has a list of errors that I ran in to while setting up my object detection classifier. You can also trying Googling the error. There is usually useful information on Stack Exchange or in TensorFlow’s Issues on GitHub.
+Komut dosyalarından herhangi birini çalıştırmak için, Anaconda Komut İstemi'ne (“tensorflow_kod” veya kendi sanal ortamınızı etkinleştirilerek) “idle” yazın ve ENTER'a basın. Bu, IDLE (compiler- derleyici veya kod düzenleme asistanı)'yi açacaktır ve oradan, komut dosyalarından herhangi birini açıp çalıştırabilirsiniz.
 
-## Appendix: Common Errors
-It appears that the TensorFlow Object Detection API was developed on a Linux-based operating system, and most of the directions given by the documentation are for a Linux OS. Trying to get a Linux-developed software library to work on Windows can be challenging. There are many little snags that I ran in to while trying to set up tensorflow-gpu to train an object detection classifier on Windows 10. This Appendix is a list of errors I ran in to, and their resolutions.
-
-#### 1. ModuleNotFoundError: No module named 'deployment' or No module named 'nets'
-
-This error occurs when you try to run object_detection_tutorial.ipynb or train.py and you don’t have the PATH and PYTHONPATH environment variables set up correctly. Exit the virtual environment by closing and re-opening the Anaconda Prompt window. Then, issue “activate tensorflow1” to re-enter the environment, and then issue the commands given in Step 2e. 
-
-You can use “echo %PATH%” and “echo %PYTHONPATH%” to check the environment variables and make sure they are set up correctly.
-
-Also, make sure you have run these commands from the \models\research directory:
-```
-setup.py build
-setup.py install
-```
-
-#### 2. ImportError: cannot import name 'preprocessor_pb2'
-
-#### ImportError: cannot import name 'string_int_label_map_pb2'
-
-#### (or similar errors with other pb2 files)
-
-This occurs when the protobuf files (in this case, preprocessor.proto) have not been compiled. Re-run the protoc command given in Step 2f. Check the \object_detection\protos folder to make sure there is a name_pb2.py file for every name.proto file.
-
-#### 3. object_detection/protos/.proto: No such file or directory
-
-This occurs when you try to run the
-```
-“protoc object_detection/protos/*.proto --python_out=.”
-```
-command given on the TensorFlow Object Detection API installation page. Sorry, it doesn’t work on Windows! Copy and paste the full command given in Step 2f instead. There’s probably a more graceful way to do it, but I don’t know what it is.
-
-#### 4. Unsuccessful TensorSliceReader constructor: Failed to get "file path" … The filename, directory name, or volume label syntax is incorrect.
-  
-This error occurs when the filepaths in the training configuration file (faster_rcnn_inception_v2_pets.config or similar) have not been entered with backslashes instead of forward slashes. Open the .config file and make sure all file paths are given in the following format:
-```
-“C:/path/to/model.file”
-```
-
-#### 5. ValueError: Tried to convert 't' to a tensor and failed. Error: Argument must be a dense tensor: range(0, 3) - got shape [3], but wanted [].
-
-The issue is with models/research/object_detection/utils/learning_schedules.py Currently it is
-```
-rate_index = tf.reduce_max(tf.where(tf.greater_equal(global_step, boundaries),
-                                      range(num_boundaries),
-                                      [0] * num_boundaries))
-```
-Wrap list() around the range() like this:
-
-```
-rate_index = tf.reduce_max(tf.where(tf.greater_equal(global_step, boundaries),
-                                     list(range(num_boundaries)),
-                                      [0] * num_boundaries))
-```
-
-[Ref: Tensorflow Issue#3705](https://github.com/tensorflow/models/issues/3705#issuecomment-375563179)
-
-#### 6. ImportError: DLL load failed: The specified procedure could not be found.   (or other DLL-related errors)
-This error occurs because the CUDA and cuDNN versions you have installed are not compatible with the version of TensorFlow you are using. The easiest way to resolve this error is to use Anaconda's cudatoolkit package rather than manually installing CUDA and cuDNN. If you ran into these errors, try creating a new Anaconda virtual environment:
-```
-conda create -n tensorflow2 pip python=3.5
-```
-Then, once inside the environment, install TensorFlow using CONDA rather than PIP:
-```
-conda install tensorflow-gpu
-```
-Then restart this guide from Step 2 (but you can skip the part where you install TensorFlow in Step 2d).
-
-#### 7. In Step 2g, the Jupyter Notebook runs all the way through with no errors, but no pictures are displayed at the end.
-If you run the full Jupyter Notebook without getting any errors, but the labeled pictures still don't appear, try this: go in to object_detection/utils/visualization_utils.py and comment out the import statements around lines 29 and 30 that include matplotlib. Then, try re-running the Jupyter notebook. (The visualization_utils.py script changes quite a bit, so it might not be exactly line 29 and 30.)
+Her şey düzgün çalışıyorsa, nesne dedektörü yaklaşık 10 saniye başlatılır ve ardından görüntüde algıladığı nesneleri gösteren bir pencere görüntüler!
